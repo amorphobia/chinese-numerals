@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 description = "Convert numbers to Chinese numerals."
 license = "AGPL-3.0-or-later"
+documentation = "https://docs.rs/chinese-numerals"
+repository = "https://github.com/amorphobia/chinese-numerals"
+homepage = "https://docs.rs/crate/chinese-numerals"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
