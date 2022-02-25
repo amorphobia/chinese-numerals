@@ -1,6 +1,6 @@
 [package]
 name = "chinese-numerals"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Convert numbers to Chinese numerals."
 license = "AGPL-3.0-or-later"
@@ -17,3 +17,6 @@ num-traits = { version = "0.2", optional = true }
 
 [features]
 bigint = ["num-bigint", "num-integer", "num-traits"]
+
+[package.metadata.docs.rs]
+all-features = true
