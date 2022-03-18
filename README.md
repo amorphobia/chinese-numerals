@@ -12,7 +12,7 @@ Add to `Cargo.toml`:
 chinese-numerals = "0.2"
 ```
 
-All structs have implemented [`Display`](https://doc.rust-lang.org/std/fmt/trait.Display.html) trait's normal (with `"{}"`) and alternative (with `"{:#}"`) formats, converting to lowercase and uppercase Chinese numbers. Besides, [`ChineseNumeral`] trait provides following functions:
+All structs have implemented [`Display`](https://doc.rust-lang.org/std/fmt/trait.Display.html) trait's normal (with `"{}"`) and alternative (with `"{:#}"`) formats, converting to lowercase and uppercase Chinese numbers. Besides, [`ChineseNumeral`](https://docs.rs/chinese-numerals/latest/chinese_numerals/trait.ChineseNumeral.html) trait provides following functions:
 
 - [`to_lowercase`](https://docs.rs/chinese-numerals/latest/chinese_numerals/trait.ChineseNumeral.html#method.to_lowercase)
 - [`to_lowercase_simp`](https://docs.rs/chinese-numerals/latest/chinese_numerals/trait.ChineseNumeral.html#method.to_lowercase#method.to_lowercase_simp)

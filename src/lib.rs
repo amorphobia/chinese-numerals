@@ -96,16 +96,28 @@ pub use midscale::MidScaleBigInt;
 #[cfg(feature = "bigint")]
 pub use myriadscale::MyriadScaleBigInt;
 
-/// The sign of the number.
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug)]
-pub enum Sign {
-    /// Negative.
-    Neg,
-    /// No sign, zero.
-    Nil,
-    /// Positive.
-    Pos,
+pub(crate) mod sealed {
+    #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug)]
+    pub enum Sign {
+        Neg,
+        Nil,
+        Pos,
+    }
+
+    pub trait SignedInteger {
+        type Data;
+
+        fn sign(&self) -> crate::Sign;
+        fn data(&self) -> &Self::Data;
+    }
+
+    pub trait ChineseNumeralBase: SignedInteger {
+        fn to_chars(&self) -> Vec<crate::characters::NumChar>;
+        fn to_chars_trimmed(&self) -> Vec<crate::characters::NumChar>;
+    }
 }
+
+use sealed::Sign;
 
 /// Chinese variants.
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -175,20 +187,6 @@ impl std::fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
-
-pub(crate) mod sealed {
-    pub trait SignedInteger {
-        type Data;
-
-        fn sign(&self) -> crate::Sign;
-        fn data(&self) -> &Self::Data;
-    }
-
-    pub trait ChineseNumeralBase: SignedInteger {
-        fn to_chars(&self) -> Vec<crate::characters::NumChar>;
-        fn to_chars_trimmed(&self) -> Vec<crate::characters::NumChar>;
-    }
-}
 
 /// Provides methods to generate Chinease numeral expression for a number.
 pub trait ChineseNumeral: sealed::ChineseNumeralBase {
