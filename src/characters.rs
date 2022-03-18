@@ -29,7 +29,10 @@ pub enum NumChar {
 
 use NumChar::*;
 
-pub(crate) const NUM_CHARS: [NumChar; 25] = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Shi, Bai, Qian, Wan, Yi, Zhao, Jing, Gai, Zi, Rang, Gou, Jian, Zheng, Zai, Neg];
+pub(crate) const NUM_CHARS: [NumChar; 25] = [
+    Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Shi, Bai, Qian, Wan, Yi, Zhao,
+    Jing, Gai, Zi, Rang, Gou, Jian, Zheng, Zai, Neg,
+];
 
 impl NumChar {
     pub fn to_lowercase_simp(self) -> char {
@@ -99,8 +102,8 @@ impl NumChar {
             Two => '貳',
             Three => '叄',
             Six => '陸',
-            _ => self.to_lowercase_trad(),
+            Wan | Yi | Zhao | Gou | Jian | Zai | Neg => self.to_lowercase_trad(),
+            _ => self.to_uppercase_simp(),
         }
     }
 }
-

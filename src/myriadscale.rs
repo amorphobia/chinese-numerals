@@ -1,7 +1,9 @@
-use crate::{characters::*, Sign, ChineseNumeral, ShortScaleInt};
+use crate::{
+    characters::*, sealed::ChineseNumeralBase, sealed::SignedInteger, ShortScaleInt, Sign,
+};
 
 /// Myriad scale integers (万进).
-/// 
+///
 /// 「以万进者，万万曰亿，万亿曰兆。」
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Default)]
 pub struct MyriadScaleInt {
@@ -11,7 +13,7 @@ pub struct MyriadScaleInt {
 
 impl MyriadScaleInt {
     /// Generates a new myriad scale integer from given sign and absolute value.
-    /// 
+    ///
     /// The range of primitive `u128` is smaller than myriad scale can reach. This crate provides [`MyriadScaleBigInt`] for integers with absolute value larger than [`u128::MAX`].
     pub fn new(sign: Sign, data: u128) -> Self {
         if data == 0 {
@@ -22,17 +24,7 @@ impl MyriadScaleInt {
     }
 }
 
-impl ChineseNumeral for MyriadScaleInt {
-    type Data = u128;
-
-    fn sign(&self) -> Sign {
-        self.sign
-    }
-
-    fn data(&self) -> &Self::Data {
-        &self.data
-    }
-
+impl ChineseNumeralBase for MyriadScaleInt {
     fn to_chars(&self) -> Vec<NumChar> {
         let mut chars = Vec::new();
         let mut num = *self.data();
@@ -81,7 +73,7 @@ use num_integer::Integer;
 use num_traits::{ToPrimitive, Zero};
 
 /// Myriad scale big integers (万进).
-/// 
+///
 /// Use it by turning on feature "bigint". It uses [`BigUint`](num_bigint::BigUint) to store the absolute value. Therefore, all integers that can be expressed in myriad scale are included.
 #[cfg(feature = "bigint")]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Default)]
@@ -92,7 +84,8 @@ pub struct MyriadScaleBigInt {
 
 #[cfg(feature = "bigint")]
 impl MyriadScaleBigInt {
-    pub(super) const MAX_ABS_ARR: &'static [u32] = &[4294967295, 2134966271, 2523967787, 239310294, 2938735877];
+    pub(super) const MAX_ABS_ARR: &'static [u32] =
+        &[4294967295, 2134966271, 2523967787, 239310294, 2938735877];
 
     /// The maximum integer can be expressed in myriad scale.
     pub fn max_value() -> Self {
@@ -112,17 +105,7 @@ impl MyriadScaleBigInt {
 }
 
 #[cfg(feature = "bigint")]
-impl ChineseNumeral for MyriadScaleBigInt {
-    type Data = BigUint;
-
-    fn sign(&self) -> Sign {
-        self.sign
-    }
-
-    fn data(&self) -> &Self::Data {
-        &self.data
-    }
-
+impl ChineseNumeralBase for MyriadScaleBigInt {
     fn to_chars(&self) -> Vec<NumChar> {
         let mut chars = Vec::new();
         let mut num = self.data().to_owned();

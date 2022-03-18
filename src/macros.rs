@@ -1,14 +1,37 @@
-use crate::{Sign, Error, ChineseNumeral, ShortScaleInt, MyriadScaleInt, MidScaleInt, LongScaleInt};
+use crate::{
+    ChineseNumeral, Error, LongScaleInt, MidScaleInt, MyriadScaleInt, ShortScaleInt, Sign,
+};
 
 #[cfg(feature = "bigint")]
-use crate::{MyriadScaleBigInt, MidScaleBigInt, LongScaleBigInt};
+use crate::{LongScaleBigInt, MidScaleBigInt, MyriadScaleBigInt};
 #[cfg(feature = "bigint")]
-use num_bigint::{BigUint, BigInt};
+use num_bigint::{BigInt, BigUint};
 #[cfg(feature = "bigint")]
-use num_traits::{Zero, Signed};
+use num_traits::{Signed, Zero};
+
+macro_rules! impl_signed_int {
+    ($($int:ident, $data:ty),+ $(,)?) => {
+        $(impl crate::sealed::SignedInteger for $int {
+            type Data = $data;
+
+            fn sign(&self) -> Sign {
+                self.sign
+            }
+
+            fn data(&self) -> &Self::Data {
+                &self.data
+            }
+        })+
+    };
+}
+
+impl_signed_int! {ShortScaleInt, u64, MyriadScaleInt, u128, MidScaleInt, u128, LongScaleInt, u128}
+
+#[cfg(feature = "bigint")]
+impl_signed_int! {MyriadScaleBigInt, BigUint, MidScaleBigInt, BigUint, LongScaleBigInt, BigUint}
 
 macro_rules! impl_disp {
-    ($($int:ty),+ $(,)?) => {
+    ($($int:ident),+ $(,)?) => {
         $(impl std::fmt::Display for $int {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 if f.alternate() {
@@ -104,7 +127,7 @@ macro_rules! impl_from_int {
                     Self {
                         sign: Sign::Pos,
                         data: value as $data,
-                    } 
+                    }
                 }
             }
         })+

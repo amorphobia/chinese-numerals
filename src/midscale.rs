@@ -1,7 +1,9 @@
-use crate::{characters::*, Sign, ChineseNumeral, MyriadScaleInt};
+use crate::{
+    characters::*, sealed::ChineseNumeralBase, sealed::SignedInteger, MyriadScaleInt, Sign,
+};
 
 /// Mid-scale integers (中数).
-/// 
+///
 /// 「中数者，万万变之。若言万万曰亿，万万亿曰兆，万万兆曰京也。」
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Default)]
 pub struct MidScaleInt {
@@ -11,7 +13,7 @@ pub struct MidScaleInt {
 
 impl MidScaleInt {
     /// Generates a new mid-scale integer from given sign and absolute value.
-    /// 
+    ///
     /// The range of primitive `u128` is smaller than mid-scale can reach. This crate provides [`MidScaleBigInt`] for integers with absolute value larger than [`u128::MAX`].
     pub fn new(sign: Sign, data: u128) -> Self {
         if data == 0 {
@@ -22,17 +24,7 @@ impl MidScaleInt {
     }
 }
 
-impl ChineseNumeral for MidScaleInt {
-    type Data = u128;
-
-    fn sign(&self) -> Sign {
-        self.sign
-    }
-
-    fn data(&self) -> &Self::Data {
-        &self.data
-    }
-
+impl ChineseNumeralBase for MidScaleInt {
     fn to_chars(&self) -> Vec<NumChar> {
         let mut chars = Vec::new();
         let mut num = *self.data();
@@ -81,7 +73,7 @@ use num_integer::Integer;
 use num_traits::{ToPrimitive, Zero};
 
 /// Mid-scale big integers (中数).
-/// 
+///
 /// Use it by turning on feature "bigint". It uses [`BigUint`](num_bigint::BigUint) to store the absolute value. Therefore, all integers that can be expressed in mid-scale are included.
 #[cfg(feature = "bigint")]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Default)]
@@ -92,7 +84,10 @@ pub struct MidScaleBigInt {
 
 #[cfg(feature = "bigint")]
 impl MidScaleBigInt {
-    pub(super) const MAX_ABS_ARR: &'static [u32] = &[4294967295, 4294967295, 2701131775, 807615852, 3882706566, 3057181734, 745289159, 4056365773, 462339630, 20];
+    pub(super) const MAX_ABS_ARR: &'static [u32] = &[
+        4294967295, 4294967295, 2701131775, 807615852, 3882706566, 3057181734, 745289159,
+        4056365773, 462339630, 20,
+    ];
 
     /// The maximum integer can be expressed in mid-scale.
     pub fn max_value() -> Self {
@@ -112,17 +107,7 @@ impl MidScaleBigInt {
 }
 
 #[cfg(feature = "bigint")]
-impl ChineseNumeral for MidScaleBigInt {
-    type Data = BigUint;
-
-    fn sign(&self) -> Sign {
-        self.sign
-    }
-
-    fn data(&self) -> &Self::Data {
-        &self.data
-    }
-
+impl ChineseNumeralBase for MidScaleBigInt {
     fn to_chars(&self) -> Vec<NumChar> {
         let mut chars = Vec::new();
         let mut num = self.data().to_owned();

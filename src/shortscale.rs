@@ -1,7 +1,7 @@
-use crate::{characters::*, Sign, ChineseNumeral};
+use crate::{characters::*, sealed::ChineseNumeralBase, sealed::SignedInteger, Sign};
 
 /// Short scale integers (下数).
-/// 
+///
 /// 「下数者，十十变之。若言十万曰亿，十亿曰兆，十兆曰京也。」
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Default)]
 pub struct ShortScaleInt {
@@ -25,17 +25,7 @@ impl ShortScaleInt {
     };
 }
 
-impl ChineseNumeral for ShortScaleInt {
-    type Data = u64;
-
-    fn sign(&self) -> Sign {
-        self.sign
-    }
-
-    fn data(&self) -> &Self::Data {
-        &self.data
-    }
-    
+impl ChineseNumeralBase for ShortScaleInt {
     fn to_chars(&self) -> Vec<NumChar> {
         let mut chars = Vec::new();
         let mut num = *self.data();
