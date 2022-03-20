@@ -1,4 +1,4 @@
-use crate::{characters::*, sealed::ChineseNumeralBase, sealed::SignedInteger, MidScaleInt, Sign};
+use crate::{characters::*, ChineseNumeralBase, MidScaleInt, Sign, Signed};
 
 /// Long scale integers (上数).
 ///
@@ -10,14 +10,17 @@ pub struct LongScaleInt {
 }
 
 impl LongScaleInt {
-    /// Generates a new long scale integer from given sign and absolute value.
+    /// Generates a new non-positive long scale integer from given absolute value.
     ///
-    /// The range of primitive `u128` is smaller than long scale can reach. This crate provides [`LongScaleBigInt`] for integers with absolute value larger than [`u128::MAX`].
-    pub fn new(sign: Sign, data: u128) -> Self {
-        if data == 0 {
+    /// There is no way to generate Chinese numerals by `From` trait from negative primitive numbers less than [`i128::MIN`]. This associated function provides a way to generate them from the given absolute value less than or equal to [`u128::MAX`]. This crate also provides struct [`LongScaleBigInt`] for integers with absolute value larger than `u128::MAX`.
+    pub fn new_non_pos(abs: u128) -> Self {
+        if abs == 0 {
             Self::default()
         } else {
-            Self { sign, data }
+            Self {
+                sign: Sign::Neg,
+                data: abs,
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-use crate::{
-    characters::*, sealed::ChineseNumeralBase, sealed::SignedInteger, ShortScaleInt, Sign,
-};
+use crate::{characters::*, ChineseNumeralBase, ShortScaleInt, Sign, Signed};
 
 /// Myriad scale integers (万进).
 ///
@@ -12,14 +10,17 @@ pub struct MyriadScaleInt {
 }
 
 impl MyriadScaleInt {
-    /// Generates a new myriad scale integer from given sign and absolute value.
+    /// Generates a new non-positive myriad scale integer from given absolute value.
     ///
-    /// The range of primitive `u128` is smaller than myriad scale can reach. This crate provides [`MyriadScaleBigInt`] for integers with absolute value larger than [`u128::MAX`].
-    pub fn new(sign: Sign, data: u128) -> Self {
-        if data == 0 {
+    /// There is no way to generate Chinese numerals by `From` trait from negative primitive numbers less than [`i128::MIN`]. This associated function provides a way to generate them from the given absolute value less than or equal to [`u128::MAX`]. This crate also provides struct [`MyriadScaleBigInt`] for integers with absolute value larger than `u128::MAX`.
+    pub fn new_non_pos(abs: u128) -> Self {
+        if abs == 0 {
             Self::default()
         } else {
-            Self { sign, data }
+            Self {
+                sign: Sign::Neg,
+                data: abs,
+            }
         }
     }
 }

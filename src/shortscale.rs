@@ -1,4 +1,4 @@
-use crate::{characters::*, sealed::ChineseNumeralBase, sealed::SignedInteger, Sign};
+use crate::{characters::*, ChineseNumeralBase, Sign, Signed};
 
 /// Short scale integers (下数).
 ///

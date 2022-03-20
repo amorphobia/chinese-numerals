@@ -6,12 +6,10 @@ use crate::{
 use crate::{LongScaleBigInt, MidScaleBigInt, MyriadScaleBigInt};
 #[cfg(feature = "bigint")]
 use num_bigint::{BigInt, BigUint};
-#[cfg(feature = "bigint")]
-use num_traits::{Signed, Zero};
 
 macro_rules! impl_signed_int {
     ($($int:ident, $data:ty),+ $(,)?) => {
-        $(impl crate::sealed::SignedInteger for $int {
+        $(impl crate::Signed for $int {
             type Data = $data;
 
             fn sign(&self) -> Sign {
@@ -170,6 +168,7 @@ macro_rules! impl_try_from_big {
 
                 /// Performs the conversion. Returns [`Error`] if the absolute value is out of range.
                 fn try_from(value: &BigUint) -> Result<Self, Self::Error> {
+                    use num_traits::Zero;
                     if value == &BigUint::zero() {
                         Ok(Self::default())
                     } else if value <= &BigUint::from_slice(Self::MAX_ABS_ARR) {
@@ -197,6 +196,7 @@ macro_rules! impl_try_from_big {
 
                 /// Performs the conversion. Returns [`Error`] if the absolute value is out of range.
                 fn try_from(value: &BigInt) -> Result<Self, Self::Error> {
+                    use num_traits::{Signed, Zero};
                     if value < &BigInt::from_slice(num_bigint::Sign::Minus, Self::MAX_ABS_ARR) || value > &BigInt::from_slice(num_bigint::Sign::Plus, Self::MAX_ABS_ARR) {
                         let abs = value.abs().to_biguint().unwrap();
                         Err(Error::$err(abs))

@@ -104,20 +104,26 @@ pub(crate) mod sealed {
         Pos,
     }
 
-    pub trait SignedInteger {
+    impl Default for Sign {
+        fn default() -> Self {
+            Self::Nil
+        }
+    }
+
+    pub trait Signed {
         type Data;
 
-        fn sign(&self) -> crate::Sign;
+        fn sign(&self) -> Sign;
         fn data(&self) -> &Self::Data;
     }
 
-    pub trait ChineseNumeralBase: SignedInteger {
+    pub trait ChineseNumeralBase: Signed {
         fn to_chars(&self) -> Vec<crate::characters::NumChar>;
         fn to_chars_trimmed(&self) -> Vec<crate::characters::NumChar>;
     }
 }
 
-use sealed::Sign;
+use sealed::{ChineseNumeralBase, Sign, Signed};
 
 /// Chinese variants.
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -126,12 +132,6 @@ pub enum Variant {
     Simplified,
     /// Traditional Chinese. Used in Taiwan (Province of China), Hong Kong, and Macau.
     Traditional,
-}
-
-impl Default for Sign {
-    fn default() -> Self {
-        Self::Nil
-    }
 }
 
 /// Out of range errors.
@@ -189,8 +189,35 @@ impl std::fmt::Display for Error {
 impl std::error::Error for Error {}
 
 /// Provides methods to generate Chinease numeral expression for a number.
-pub trait ChineseNumeral: sealed::ChineseNumeralBase {
+pub trait ChineseNumeral {
     /// Converts the number to lowercase (小写数字, used for normal contexts).
+    fn to_lowercase(&self, variant: Variant) -> String;
+
+    /// Converts the number to lowercase (小写数字, used for normal contexts) in simplified Chinese.
+    fn to_lowercase_simp(&self) -> String {
+        self.to_lowercase(Variant::Simplified)
+    }
+
+    /// Converts the number to lowercase (小写数字, used for normal contexts) in traditional Chinese.
+    fn to_lowercase_trad(&self) -> String {
+        self.to_lowercase(Variant::Traditional)
+    }
+
+    /// Converts the number to uppercase (大写数字, used for financial contexts).
+    fn to_uppercase(&self, variant: Variant) -> String;
+
+    /// Converts the number to uppercase (大写数字, used for financial contexts) in simplified Chinese.
+    fn to_uppercase_simp(&self) -> String {
+        self.to_uppercase(Variant::Simplified)
+    }
+
+    /// Converts the number to uppercase (大写数字, used for financial contexts) in traditional Chinese.
+    fn to_uppercase_trad(&self) -> String {
+        self.to_uppercase(Variant::Traditional)
+    }
+}
+
+impl<T: ChineseNumeralBase> ChineseNumeral for T {
     fn to_lowercase(&self, variant: Variant) -> String {
         let method = match variant {
             Variant::Simplified => NumChar::to_lowercase_simp,
@@ -205,17 +232,6 @@ pub trait ChineseNumeral: sealed::ChineseNumeralBase {
         chars.into_iter().rev().map(method).collect()
     }
 
-    /// Converts the number to lowercase (小写数字, used for normal contexts) in simplified Chinese.
-    fn to_lowercase_simp(&self) -> String {
-        self.to_lowercase(Variant::Simplified)
-    }
-
-    /// Converts the number to lowercase (小写数字, used for normal contexts) in traditional Chinese.
-    fn to_lowercase_trad(&self) -> String {
-        self.to_lowercase(Variant::Traditional)
-    }
-
-    /// Converts the number to uppercase (大写数字, used for financial contexts).
     fn to_uppercase(&self, variant: Variant) -> String {
         let method = match variant {
             Variant::Simplified => NumChar::to_uppercase_simp,
@@ -229,16 +245,4 @@ pub trait ChineseNumeral: sealed::ChineseNumeralBase {
         }
         chars.into_iter().rev().map(method).collect()
     }
-
-    /// Converts the number to uppercase (大写数字, used for financial contexts) in simplified Chinese.
-    fn to_uppercase_simp(&self) -> String {
-        self.to_uppercase(Variant::Simplified)
-    }
-
-    /// Converts the number to uppercase (大写数字, used for financial contexts) in traditional Chinese.
-    fn to_uppercase_trad(&self) -> String {
-        self.to_uppercase(Variant::Traditional)
-    }
 }
-
-impl<T> ChineseNumeral for T where T: sealed::ChineseNumeralBase {}
