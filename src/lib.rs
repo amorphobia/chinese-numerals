@@ -96,34 +96,30 @@ pub use midscale::MidScaleBigInt;
 #[cfg(feature = "bigint")]
 pub use myriadscale::MyriadScaleBigInt;
 
-pub(crate) mod sealed {
-    #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug)]
-    pub enum Sign {
-        Neg,
-        Nil,
-        Pos,
-    }
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug)]
+pub(crate) enum Sign {
+    Neg,
+    Nil,
+    Pos,
+}
 
-    impl Default for Sign {
-        fn default() -> Self {
-            Self::Nil
-        }
-    }
-
-    pub trait Signed {
-        type Data;
-
-        fn sign(&self) -> Sign;
-        fn data(&self) -> &Self::Data;
-    }
-
-    pub trait ChineseNumeralBase: Signed {
-        fn to_chars(&self) -> Vec<crate::characters::NumChar>;
-        fn to_chars_trimmed(&self) -> Vec<crate::characters::NumChar>;
+impl Default for Sign {
+    fn default() -> Self {
+        Self::Nil
     }
 }
 
-use sealed::{ChineseNumeralBase, Sign, Signed};
+pub(crate) trait Signed {
+    type Data;
+
+    fn sign(&self) -> Sign;
+    fn data(&self) -> &Self::Data;
+}
+
+pub(crate) trait ChineseNumeralBase: Signed {
+    fn to_chars(&self) -> Vec<crate::characters::NumChar>;
+    fn to_chars_trimmed(&self) -> Vec<crate::characters::NumChar>;
+}
 
 /// Chinese variants.
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
